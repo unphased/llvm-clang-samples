@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Makefile for building the code samples. Read inline comments for
+# Sample makefile for building the code samples. Read inline comments for
 # documentation.
 #
 # Eli Bendersky (eliben@gmail.com)
@@ -87,6 +87,7 @@ CLANG_LIBS := \
 	-lclangStaticAnalyzerCheckers \
 	-lclangStaticAnalyzerCore \
 	-lclangSerialization \
+	-lclangToolingCore \
 	-lclangTooling \
 	-Wl,--end-group
 
@@ -112,7 +113,6 @@ all: make_builddir \
 	$(BUILDDIR)/matchers_rewriter \
 	$(BUILDDIR)/tooling_sample \
 	$(BUILDDIR)/plugin_print_funcnames.so
-
 
 .PHONY: test
 test: emit_build_config
@@ -177,16 +177,15 @@ $(BUILDDIR)/plugin_print_funcnames.so: $(SRC_CLANG_DIR)/plugin_print_funcnames.c
 .PHONY: experimental_tools
 experimental_tools: make_builddir \
 	emit_build_config \
+	$(BUILDDIR)/loop_info \
 	$(BUILDDIR)/remove-cstr-calls \
 	$(BUILDDIR)/toplevel_decls \
-	$(BUILDDIR)/try_matcher \
-	$(BUILDDIR)/location_disect_sample
+	$(BUILDDIR)/try_matcher
+
+$(BUILDDIR)/loop_info: $(SRC_LLVM_DIR)/experimental/loop_info.cpp
+	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $^ $(LLVM_LDFLAGS) -o $@
 
 $(BUILDDIR)/remove-cstr-calls: $(SRC_CLANG_DIR)/experimental/RemoveCStrCalls.cpp
-	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
-		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
-
-$(BUILDDIR)/location_disect_sample: $(SRC_CLANG_DIR)/experimental/location_disect_sample.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 

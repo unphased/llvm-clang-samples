@@ -23,30 +23,24 @@ int main(int argc, char **argv) {
 
   // Parse the input LLVM IR file into a module.
   SMDiagnostic Err;
-  Module *Mod = ParseIRFile(argv[1], Err, getGlobalContext());
+  std::unique_ptr<Module> Mod(parseIRFile(argv[1], Err, getGlobalContext()));
   if (!Mod) {
     Err.print(argv[0], errs());
     return 1;
   }
 
   // Go over all named mdnodes in the module
-  for (Module::named_metadata_iterator I = Mod->named_metadata_begin(),
-                                       E = Mod->named_metadata_end();
+  for (Module::const_named_metadata_iterator I = Mod->named_metadata_begin(),
+                                             E = Mod->named_metadata_end();
        I != E; ++I) {
     outs() << "Found MDNode:\n";
     I->dump();
 
     for (unsigned i = 0, e = I->getNumOperands(); i != e; ++i) {
-      Value *Op = I->getOperand(i);
-      if (MDNode *N = dyn_cast<MDNode>(Op)) {
+      Metadata *Op = I->getOperand(i);
+      if (auto *N = dyn_cast<MDNode>(Op)) {
         outs() << "  Has MDNode operand:\n  ";
         N->dump();
-
-        for (Value::use_iterator UI = N->use_begin(), UE = N->use_end();
-             UI != UE; ++UI) {
-          outs() << "   the operand has a user:\n    ";
-          outs() << *UI << "\n";
-        }
       }
     }
   }
