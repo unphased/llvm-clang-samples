@@ -167,7 +167,7 @@ $(BUILDDIR)/matchers_rewriter: $(SRC_CLANG_DIR)/matchers_rewriter.cpp
 
 $(BUILDDIR)/plugin_print_funcnames.so: $(SRC_CLANG_DIR)/plugin_print_funcnames.cpp
 	$(CXX) $(PLUGIN_CXXFLAGS) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
-		$(PLUGIN_LDFLAGS) $(CLANG_LIBS) $(LLVM_LDFLAGS_NOLIBS) -o $@
+		$(PLUGIN_LDFLAGS) $(LLVM_LDFLAGS_NOLIBS) -o $@
 
 # Experimental tools - use at your own peril.
 #
