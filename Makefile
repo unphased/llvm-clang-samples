@@ -172,6 +172,7 @@ $(BUILDDIR)/plugin_print_funcnames.so: $(SRC_CLANG_DIR)/plugin_print_funcnames.c
 		$(PLUGIN_LDFLAGS) $(LLVM_LDFLAGS_NOLIBS) -o $@
 
 # building exfil
+exfil: $(BUILDDIR)/exfil
 
 $(BUILDDIR)/exfil: $(SRC_EXFIL_DIR)/exfil.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
