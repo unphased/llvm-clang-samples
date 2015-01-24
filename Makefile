@@ -94,6 +94,8 @@ SRC_LLVM_DIR := src_llvm
 SRC_CLANG_DIR := src_clang
 BUILDDIR := build
 
+SRC_EXFIL_DIR := exfil
+
 .PHONY: all
 all: make_builddir \
 	emit_build_config \
@@ -168,6 +170,12 @@ $(BUILDDIR)/matchers_rewriter: $(SRC_CLANG_DIR)/matchers_rewriter.cpp
 $(BUILDDIR)/plugin_print_funcnames.so: $(SRC_CLANG_DIR)/plugin_print_funcnames.cpp
 	$(CXX) $(PLUGIN_CXXFLAGS) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 		$(PLUGIN_LDFLAGS) $(LLVM_LDFLAGS_NOLIBS) -o $@
+
+# building exfil
+
+$(BUILDDIR)/exfil: $(SRC_EXFIL_DIR)/exfil.cpp
+	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
+		$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
 
 # Experimental tools - use at your own peril.
 #
