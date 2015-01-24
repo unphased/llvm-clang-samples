@@ -40,7 +40,7 @@ import ycm_core
 # Seems like the only special thing to add to ycm clang flags for OS X is the 
 # system path with isystem. It's black magicks.
 flagString = """\
--pedantic -Wall -Wextra -Wc++98-compat -Wno-long-long
+-Wno-long-long
 -Wno-variadic-macros -I/Users/lust/Documents/llvm_new/llvm/include
 -I/Users/lust/Documents/llvm_new/build/include
 -I/Users/lust/Documents/llvm_new/llvm/tools/clang/include
