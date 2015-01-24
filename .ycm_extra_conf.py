@@ -36,16 +36,20 @@ import ycm_core
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 
 # there is a section in the middle that is derived from
-# `$HOME/Documents/llvm_new/build/Release+Asserts/bin/llvm-config --cxxflags` 
+# `$HOME/Documents/llvm_new/build/Release+Asserts/bin/llvm-config --cxxflags`
+# Seems like the only special thing to add to ycm clang flags for OS X is the 
+# system path with isystem. It's black magicks.
 flagString = """\
--pedantic -Wall -Wextra -Werror -Wc++98-compat -Wno-long-long
+-pedantic -Wall -Wextra -Wc++98-compat -Wno-long-long
 -Wno-variadic-macros -I/Users/lust/Documents/llvm_new/llvm/include
 -I/Users/lust/Documents/llvm_new/build/include
 -I/Users/lust/Documents/llvm_new/llvm/tools/clang/include
 -I/Users/lust/Documents/llvm_new/build/tools/clang/include
 -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
 -D__STDC_LIMIT_MACROS -O0 -g -std=c++11 -fvisibility-inlines-hidden
--fno-exceptions -fno-rtti -fno-common -Wcast-qual -x c++"""
+-fno-exceptions -fno-rtti -fno-common -Wcast-qual -x c++
+-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/\
+XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"""
 
 flags = flagString.replace('\n', ' ').split(' ')
 
