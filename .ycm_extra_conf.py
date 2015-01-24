@@ -34,39 +34,20 @@ import ycm_core
 # These are the compilation flags that will be used in case there's no
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
-flags = [
-    '-pedantic',
-    '-Wall',
-    '-Wextra',
-    '-Werror',
-    '-Wc++98-compat',
-    '-Wno-long-long',
-    '-Wno-variadic-macros',
-    # the following from 
-    # `$HOME/Documents/llvm_new/build/Release+Asserts/bin/llvm-config 
-    # --cxxflags`:
-    '-I/Users/lust/Documents/llvm_new/llvm/include',
-    '-I/Users/lust/Documents/llvm_new/build/include',
-    '-I/Users/lust/Documents/llvm_new/llvm/tools/clang/include',
-    '-I/Users/lust/Documents/llvm_new/build/tools/clang/include',
-    '-D_DEBUG',
-    '-D_GNU_SOURCE',
-    '-D__STDC_CONSTANT_MACROS',
-    '-D__STDC_FORMAT_MACROS',
-    '-D__STDC_LIMIT_MACROS',
-    '-O0',
-    '-g',
-    '-std=c++11',
-    '-fvisibility-inlines-hidden',
-    '-fno-exceptions',
-    '-fno-rtti',
-    '-fno-common',
-    '-Wcast-qual',  # no idea why, e.g. this is necessary to specify
 
-    '-x',
-    'c++',
-]
+# there is a section in the middle that is derived from
+# `$HOME/Documents/llvm_new/build/Release+Asserts/bin/llvm-config --cxxflags` 
+flagString = """\
+-pedantic -Wall -Wextra -Werror -Wc++98-compat -Wno-long-long
+-Wno-variadic-macros -I/Users/lust/Documents/llvm_new/llvm/include
+-I/Users/lust/Documents/llvm_new/build/include
+-I/Users/lust/Documents/llvm_new/llvm/tools/clang/include
+-I/Users/lust/Documents/llvm_new/build/tools/clang/include
+-D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
+-D__STDC_LIMIT_MACROS -O0 -g -std=c++11 -fvisibility-inlines-hidden
+-fno-exceptions -fno-rtti -fno-common -Wcast-qual -x c++"""
 
+flags = flagString.replace('\n', ' ').split(' ')
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
 # compile_commands.json file to use that instead of 'flags'. See here for
