@@ -41,10 +41,10 @@ import ycm_core
 # system path with isystem. It's black magicks.
 flagString = """\
 -Wno-long-long
--Wno-variadic-macros -I/Users/lust/Documents/llvm_new/llvm/include
--I/Users/lust/Documents/llvm_new/build/include
--I/Users/lust/Documents/llvm_new/llvm/tools/clang/include
--I/Users/lust/Documents/llvm_new/build/tools/clang/include
+-Wno-variadic-macros -I/root/doc/llvm_clang/llvm/include
+-I/root/doc/llvm_clang/build/include
+-I/root/doc/llvm_clang/llvm/tools/clang/include
+-I/root/doc/llvm_clang/build/tools/clang/include
 -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
 -D__STDC_LIMIT_MACROS -O0 -g -std=c++11 -fvisibility-inlines-hidden
 -fno-exceptions -fno-rtti -fno-common -Wcast-qual -x c++

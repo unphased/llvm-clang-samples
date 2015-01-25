@@ -27,6 +27,10 @@ public:
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     auto record_decl = Result.Nodes.getNodeAs<clang::CXXRecordDecl>("recorddecl");
+    if (record_decl) {
+      auto name = record_decl->getQualifiedNameAsString();
+      llvm::outs() << "Found a decl: " << name << "\n";
+    }
     if (record_decl && Result.SourceManager->isInMainFile(record_decl->getLocation())) {
       // auto parent = record_decl->getParent();
       // auto className = parent->getQualifiedNameAsString();
