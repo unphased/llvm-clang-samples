@@ -4,12 +4,15 @@
 #include "clang/AST/AST.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/Basic/DiagnosticOptions.h"
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/SourceManager.h"
+#include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
 #include "clang/Tooling/Tooling.h"
+#include "clang/Rewrite/Core/Rewriter.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include "exfil.h"
@@ -79,6 +82,27 @@ int main(int argc, const char **argv) {
   llvm::outs() << "Replacements collected by the tool:\n";
   for (auto &r : Tool.getReplacements()) {
     llvm::outs() << r.toString() << "\n";
+  }
+
+  // use Rewriter to get visibility into the collapsed Replacements
+  IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
+  DiagnosticsEngine Diagnostics(
+      IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()), &*DiagOpts,
+      new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts), true);
+  SourceManager Sources(Diagnostics, Tool.getFiles());
+
+  // Apply all replacements to a rewriter.
+  Rewriter Rewrite(Sources, LangOptions());
+  Tool.applyAllReplacements(Rewrite);
+
+  // Query the rewriter for all the files it has rewritten, dumping their new
+  // contents to stdout.
+  for (Rewriter::buffer_iterator I = Rewrite.buffer_begin(),
+                                 E = Rewrite.buffer_end();
+       I != E; ++I) {
+    const FileEntry *Entry = Sources.getFileEntryForID(I->first);
+    llvm::outs() << "Rewrite buffer for file: " << Entry->getName() << "\n";
+    I->second.write(llvm::outs());
   }
 
   return 0;
