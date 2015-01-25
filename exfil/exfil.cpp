@@ -26,20 +26,26 @@ public:
   DeclHandler(Replacements *Replace) : Replace(Replace) {}
 
   virtual void run(const MatchFinder::MatchResult &Result) {
-    auto decl = Result.Nodes.getNodeAs<clang::CXXRecordDecl>("recorddecl");
-    if (decl && Result.SourceManager->isInMainFile(decl->getLocation())) {
-      // auto parent = decl->getParent();
+    auto record_decl = Result.Nodes.getNodeAs<clang::CXXRecordDecl>("recorddecl");
+    if (record_decl && Result.SourceManager->isInMainFile(record_decl->getLocation())) {
+      // auto parent = record_decl->getParent();
       // auto className = parent->getQualifiedNameAsString();
       std::string str("/* this is the CXXRecordDecl ");
-      str += decl->getQualifiedNameAsString();
+      str += record_decl->getQualifiedNameAsString();
       // str += " in class/struct/union ";
       // str += className;
       str += " */";
-      Replacement Rep(*(Result.SourceManager), decl->getLocStart(), 0, str);
+      Replacement Rep(*(Result.SourceManager), record_decl->getLocStart(), 0, str);
       Replace->insert(Rep);
     }
-    if (!decl) 
-      decl = Result.Nodes.getNodeAs<clang::FieldDecl>("fielddecl");
+    auto field_decl = Result.Nodes.getNodeAs<clang::FieldDecl>("fielddecl");
+    if (field_decl && Result.SourceManager->isInMainFile(field_decl->getLocation())) {
+      std::string str("/* this is the FieldDecl ");
+      str += field_decl->getQualifiedNameAsString();
+      str += " */";
+      Replacement Rep(*(Result.SourceManager), field_decl->getLocStart(), 0, str);
+      Replace->insert(Rep);
+    }
   }
 private:
   Replacements *Replace;
