@@ -30,7 +30,9 @@ public:
 
   virtual void run(const MatchFinder::MatchResult &Result) {
     auto record_decl = Result.Nodes.getNodeAs<clang::CXXRecordDecl>("recorddecl");
-    if (record_decl && Result.SourceManager->isInMainFile(record_decl->getLocation())) {
+    const SourceManager* sm = Result.SourceManager;
+    SourceLocation loc;
+    if (record_decl && (loc = record_decl->getLocation(), sm->isInMainFile(loc))) {
       // auto parent = record_decl->getParent();
       // auto className = parent->getQualifiedNameAsString();
       std::string str("/* this is the CXXRecordDecl ");
@@ -38,15 +40,36 @@ public:
       // str += " in class/struct/union ";
       // str += className;
       str += " */";
-      Replacement Rep(*(Result.SourceManager), record_decl->getLocStart(), 0, str);
+      Replacement Rep(*(sm), record_decl->getLocStart(), 0, str);
       Replace->insert(Rep);
     }
     auto field_decl = Result.Nodes.getNodeAs<clang::FieldDecl>("fielddecl");
-    if (field_decl && Result.SourceManager->isInMainFile(field_decl->getLocation())) {
+    if (field_decl) {
+      loc = field_decl->getLocation();
+      auto name = field_decl->getQualifiedNameAsString();
+      llvm::outs() <<
+        " Main file: " << sm->isInMainFile(loc) <<
+        " Written in main file: " << sm->isWrittenInMainFile(loc) <<
+        " Filename: " << sm->getFilename(loc) <<
+        " Line: " << sm->getPresumedLineNumber(loc) <<
+        " Col: " << sm->getPresumedColumnNumber(loc) <<
+        ": " << name;
+      // Presumed locations are always for expansion points.
+      std::pair<FileID, unsigned> locInfo = sm->getDecomposedExpansionLoc(loc);
+ 
+      bool invalid = false;
+      const clang::SrcMgr::SLocEntry &Entry = sm->getSLocEntry(locInfo.first, &invalid);
+      if (invalid || !Entry.isFile()) {
+        llvm::outs() << " invalid ";
+      }
+      const SrcMgr::FileInfo &FI = Entry.getFile();
+      llvm::outs() << "\n";
+    }
+    if (field_decl && sm->isInMainFile(field_decl->getLocation())) {
       std::string str("/* this is the FieldDecl ");
       str += field_decl->getQualifiedNameAsString();
       str += " */";
-      Replacement Rep(*(Result.SourceManager), field_decl->getLocStart(), 0, str);
+      Replacement Rep(*(sm), field_decl->getLocStart(), 0, str);
       Replace->insert(Rep);
     }
   }
@@ -55,7 +78,8 @@ private:
 };
 
 static DeclarationMatcher recorddeclmatcher = 
-  recordDecl(hasDescendant(fieldDecl())).bind("recorddecl");
+  // recordDecl(hasDescendant(fieldDecl())).bind("recorddecl");
+  recordDecl().bind("recorddecl");
 
 static DeclarationMatcher fielddeclmatcher = 
   fieldDecl().bind("fielddecl");
@@ -102,7 +126,9 @@ int main(int argc, const char **argv) {
        I != E; ++I) {
     const FileEntry *Entry = Sources.getFileEntryForID(I->first);
     llvm::outs() << "Rewrite buffer for file: " << Entry->getName() << "\n";
+    llvm::outs().changeColor(raw_ostream::YELLOW);
     I->second.write(llvm::outs());
+    llvm::outs().resetColor() << "\n";
   }
 
   return 0;
