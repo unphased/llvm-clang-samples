@@ -186,11 +186,15 @@ $(BUILDDIR)/exfil: $(SRC_EXFIL_DIR)/exfil.cpp
 experimental_tools: make_builddir \
 	emit_build_config \
 	$(BUILDDIR)/loop_info \
+	$(BUILDDIR)/build_llvm_ir \
 	$(BUILDDIR)/remove-cstr-calls \
 	$(BUILDDIR)/toplevel_decls \
 	$(BUILDDIR)/try_matcher
 
 $(BUILDDIR)/loop_info: $(SRC_LLVM_DIR)/experimental/loop_info.cpp
+	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $^ $(LLVM_LDFLAGS) -o $@
+
+$(BUILDDIR)/build_llvm_ir: $(SRC_LLVM_DIR)/experimental/build_llvm_ir.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $^ $(LLVM_LDFLAGS) -o $@
 
 $(BUILDDIR)/remove-cstr-calls: $(SRC_CLANG_DIR)/experimental/RemoveCStrCalls.cpp
